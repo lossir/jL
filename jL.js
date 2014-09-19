@@ -56,6 +56,15 @@
      */
     utilities.prototype = {
 
+        'getTemplate' : function(src, callback){
+            $.get(src,function(template){
+                console.log(template);
+                console.log($(template));
+                console.log(jL.testFunc);
+                callback($(template));
+            },'html')
+        },
+
         /**
          * Получить массив состоящий только из одного свойства объектов
          *
@@ -187,10 +196,12 @@
          * @return {Boolean}
          */
         'testFunc': function (func) {
-            var _this = this;
+            var _this = this || window
+                ,arg = arguments;
             return (func !== false && typeof(func) == 'function')
                 ? (function () {
-                    func.apply(_this, Array.prototype.slice.call(arguments, 1));
+                console.log(arg);
+                    func.apply(_this, Array.prototype.slice.call(arg, 1));
                     return true;
                 }())
                 : false
@@ -209,7 +220,7 @@
          *
          * @return {*}
          */
-        "callMethodPlugin":    function (methods, method, options, settings) {
+        'callMethodPlugin':    function (methods, method, options, settings) {
             if (methods[method]) {
                 $.extend(settings, options);
                 return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 4));
