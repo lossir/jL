@@ -34,19 +34,18 @@
     var jLScript,
         utilities = function () {
         },
-        _variables;
 
-    /**
-     * Общедостуное хранилище данных для плагинов и внутренних методов
-     * При добавлении нового плагина jQuery через jLScript, в хранилище создаётся объект с ключом имени плагина <без_префикса>
-     *
-     * @type {Object}
-     * @private
-     *
-     * @see jLScript.setPlugin
-     */
-    _variables = {
-    };
+        /**
+         * Общедостуное хранилище данных для плагинов и внутренних методов
+         * При добавлении нового плагина jQuery через jLScript, в хранилище создаётся объект с ключом имени плагина <без_префикса>
+         *
+         * @type {Object}
+         * @private
+         *
+         * @see jLScript.setPlugin
+         */
+            _variables = {
+        };
 
     /**
      * Класс содержит утилиты доступные через jLScript
@@ -272,14 +271,12 @@
          * @param {jQuery|HtmlElement}  [element=window] элемент html
          * @param {Number}              [delay=50]       задержка в ms
          */
-        'laggedHandler':  function (handler, event, element, delay) {
+        'laggedHandler': function (handler, event, element, delay) {
             delay = delay || 50;
             element = element || window;
-            var nameTimer = "laggedHandlerTimer"+this.generator();
+            var nameTimer = "laggedHandlerTimer" + this.generator();
             $(element).off(event).on(event, function (e) {
-                element.hasOwnProperty(nameTimer)
-                    ? clearTimeout(element[nameTimer])
-                    : false;
+                if (element.hasOwnProperty(nameTimer)) clearTimeout(element[nameTimer]);
                 element[nameTimer] = setTimeout(function () {
                     handler.call(element, e)
                 }, delay);
