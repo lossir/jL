@@ -56,15 +56,6 @@
      */
     utilities.prototype = {
 
-        'getTemplate' : function(src, callback){
-            $.get(src,function(template){
-                console.log(template);
-                console.log($(template));
-                console.log(jL.testFunc);
-                callback($(template));
-            },'html')
-        },
-
         /**
          * Получить массив состоящий только из одного свойства объектов
          *
@@ -173,13 +164,15 @@
          * Заменяет все вхождения строки поиска на строку замены (аналог str_replace в php)
          *
          * @param {String} str      Место поиска
-         * @param {Array} search    Массив строк поиска
-         * @param {Array} replace   Массив строк замены
+         * @param {Array|String} search    Массив строк поиска
+         * @param {Array|String} replace   Массив строк замены
          *
          * @returns {String}
          */
         'strReplace': function (str, search, replace) {
             var index;
+            search = jL._dataToArr(search);
+            replace = jL._dataToArr(replace);
             return str.replace(new RegExp('(' + search.join('|') + ')', 'g'), function () {
                 index = search.indexOf(+arguments[1]);
                 return replace[!!~index
