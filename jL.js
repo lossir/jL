@@ -56,6 +56,7 @@
      */
     utilities.prototype = {
 
+        expansionDefineProperty : expansionDefineProperty,
         /**
          * Получить массив состоящий только из одного свойства объектов
          *

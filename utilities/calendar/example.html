@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+    <meta http-equiv="content-language" content="ru"/>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+    <!--<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>-->
+    <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="/js/jL/jL.js"></script>
+    <script src="jL.utility.calendar.js"></script>
+
+    <title>jL.utility.calendar.js</title>
+</head>
+<body>
+<script type="text/javascript">
+
+    $(function(){
+
+        var month = jL.calendar().getMonthsInArray();
+        for(var i = 0; i< month.length; i++){
+            var week = month[i];
+            for(var j = 0; j< week.length; j++){
+                var day = week[j];
+                if(day.jL().isDateCurrent()){
+                    console.log(day);
+                }
+            }
+        }
+
+        console.log(
+                jL.calendar().getMonthsInArray(),
+                new Date().jL().getDayName()
+        );
+
+    });
+
+</script>
+</body>
+</html>
