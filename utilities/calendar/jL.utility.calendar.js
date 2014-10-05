@@ -25,6 +25,7 @@ jL.setUtilities('calendar', function (date, options) {
          * Получить заданный месяц в виде массива(недели) массивов(дни)
          */
         getMonthsInArray: function (month) {
+            date = $.type(this) == 'date' ? this : date;
             if(month){
                 date.setMonth(month);
             }
