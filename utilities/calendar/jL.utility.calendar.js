@@ -69,12 +69,22 @@ jL.setUtilities('calendar', function (date, options) {
          * Возвращает название дня
          *
          * @param [short=false]
+         * @returns {String}
          */
         getDayName      : function (short) {
-            var getDay = date.getDay();
+            var day = date.getDay();
             return (short
                 ? settings.dayNamesShort
-                : settings.dayNamesFull)[getDay > 0 ? getDay-1 : 6];
+                : settings.dayNamesFull)[day > 0 ? day-1 : 6];
+        },
+        /**
+         * Возвращает название месяца
+         *
+         * @returns {String}
+         */
+        getMonthName      : function () {
+            var month = date.getMonth();
+            return settings.monthNamesFull[month];
         },
         /**
          * Получить количество дней в месяце
