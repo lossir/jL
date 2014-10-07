@@ -19,7 +19,8 @@ jL.setUtilities('calendar', function (date, options) {
     var settings = {
 //        currentDate  : date || new Date(),
         dayNamesShort: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
-        dayNamesFull : ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+        dayNamesFull : ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
+        monthNamesFull : ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
     }, methods = {
         /**
          * Получить заданный месяц в виде массива(недели) массивов(дни)
@@ -127,7 +128,29 @@ jL.setUtilities('calendar', function (date, options) {
          */
         isDateCurrent  : function () {
             return (date.getMonth() == new Date().getMonth()) && (date.getFullYear() == new Date().getFullYear()) && (date.getDate() == new Date().getDate());
+        },
+        /**
+         * Получить массив названий дней
+         *
+         * @returns {{short: *, full: *}}
+         */
+        getDayNames : function(){
+            return {
+                'short':settings.dayNamesShort,
+                'full':settings.dayNamesFull
+            };
+        },
+        /**
+         * Получить массив названий месяцев
+         *
+         * @returns {{full: *}}
+         */
+        getMonthNamesFull : function(){
+            return {
+                'full':settings.monthNamesFull
+            };
         }
+
     };
 
     $.extend(settings, options);
