@@ -5,30 +5,69 @@
  * Time     15:59
  *
  * @author  Lossir  lossir@mail.ru
- * @version 5.0
+ * @version 1.0
  *
  * @requires jQuery
  */
+
+//Date: 23.03.15
+//Time: 10:51
+//TODO: Написать "перехватчик" ajax запросов, для отслеживания появления новых элементов
 
 ;
 (function ($) {
 
     var expansionDefineProperty = function(object, name, value){
-            if(!object[name]){
-                if(Object.defineProperty && ('\v'!='v')){
-                        Object.defineProperty(object, name,{
-                            configurable: true,
-                            enumerable: false,
-                            writable: true,
-                            value: value
-                        });
-                } else {
-                    object[name] = value;
-                }
+        if(!object[name]){
+            if(Object.defineProperty && ('\v'!='v')){
+                Object.defineProperty(object, name,{
+                    configurable: true,
+                    enumerable: false,
+                    writable: true,
+                    value: value
+                });
+            } else {
+                object[name] = value;
             }
-        };
+        }
+    };
+
+    expansionDefineProperty(Array.prototype, 'filter', function(test) {
+        test = test || function (){return true;};
+        var newArray = [],
+            i = 0;
+        for(; i<this.length; i++){
+            if(!!test(this[i], i, this))newArray.push(this[i]);
+        }
+        return newArray;
+    });
+    expansionDefineProperty(Array.prototype, 'indexOf', function(value) {
+        for(var i=0; i<this.length; i++){
+            if(value==this[i])return i;
+        }
+        return -1
+    });
     expansionDefineProperty(Array.prototype, 'diff', function(a) {
         return this.filter(function(i) {return a.indexOf(i) < 0;});
+    });
+    expansionDefineProperty(Array.prototype, 'forEach', function (func) {
+        func = func || false;
+        var key
+            , result
+            , mas = ($.type(this) == 'array')
+                ? []
+                : {};
+        for (key in this) if (this.hasOwnProperty(key))  {
+            if (func) {
+                result = func(this[key], +key, this);
+                if (result !== 'forEachStop') mas[key] = result;
+                else break;
+            }
+            else {
+                mas[key] = this[key];
+            }
+        }
+        return mas;
     });
 
     var jLScript,
@@ -55,6 +94,61 @@
      * @private
      */
     utilities.prototype = {
+
+        IEBind: function(){
+            var $this = {
+                ie     : false,
+                bodyReady     : false,
+                actions: {
+                    8: [],
+                    9: []
+                },
+                add    : function (ie, action) {
+                    ie.split(',').forEach(function(value){
+                        $this.actions[+value || 8].push({
+                            func : action,
+                            started : false
+                        });
+                        if($this.bodyReady){
+                            $this.exec();
+                        }
+                    });
+                },
+                exec   : function () {
+                    if (!!$this.ie) {
+                        $(function () {
+                            $this.actions[$this.ie].filter(function (action) {
+                                if(!action.started){
+                                    setTimeout(function () {
+                                        action.func();
+                                        action.started = true;
+                                    }, 100)
+                                }
+                            });
+                        })
+                    }
+                }};
+            (function () {
+                if ('\v' == 'v') {
+                    $this.ie = 8;
+                }
+                else if (!!~navigator.userAgent.indexOf('MSIE 9.0;')) {
+                    $this.ie = 9;
+                }
+                var ieTimer = setInterval(function () {
+                    if (document.body) {
+                        clearInterval(ieTimer);
+                        if ($this.ie) {
+                            $('body').addClass('-ie' + $this.ie);
+                            $this.exec();
+                            $this.bodyReady = true;
+                        }
+                    }
+                }, 10);
+            }());
+
+            return $this;
+        }(),
 
         expansionDefineProperty : expansionDefineProperty,
         /**
@@ -88,7 +182,7 @@
          * @returns {Number}
          */
         'sum':            function () {
-            return +eval(JSON.stringify(Array.prototype.slice.call(arguments, 0)).replace(/\[|\"|\]/g, '').replace(/,/g, '+'));
+            return +eval(JSON.stringify(Array.prototype.slice.call(arguments, 0)).replace(/\[|\"|\]/g, '').replace(/,/g, '+')||0);
         },
 
         /**
@@ -114,34 +208,6 @@
             var length = 0, k;
             for (k in obj) if(obj.hasOwnProperty(k) || (calcPrototype || false)) length++;
             return length;
-        },
-
-        /**
-         * Аналог стандартного метода forEach EcmaScript5
-         * если callback функция вернёт строку 'forEachStop' - перебор останавливается
-         *
-         * @param {Function} func
-         *
-         * @returns {Array|Object} Зависит от типа контекста
-         */
-        'forEach':        function (func) {
-            func = func || false;
-            var key
-                , result
-                , mas = ($.type(this) == 'array')
-                    ? []
-                    : {};
-            for (key in this) if (this.hasOwnProperty(key))  {
-                if (func) {
-                    result = func(this[key], +key, this);
-                    if (result !== 'forEachStop') mas[key] = result;
-                    else break;
-                }
-                else {
-                    mas[key] = this[key];
-                }
-            }
-            return mas;
         },
 
         /**
@@ -195,9 +261,9 @@
             return (func !== false && typeof(func) == 'function')
                 ? (function () {
                 console.log(arg);
-                    func.apply(_this, Array.prototype.slice.call(arg, 1));
-                    return true;
-                }())
+                func.apply(_this, Array.prototype.slice.call(arg, 1));
+                return true;
+            }())
                 : false
         },
 
@@ -257,12 +323,12 @@
             var i = 0, ret = (( $.type(data) == 'array' )
                 ? data
                 : (( $.type(data) == 'string' )
-                    ? (( data.search(sep) > 0 )
-                        ? data.split(sep)
-                        : [data]
-                        )
-                    : []
-                    )
+                ? (( data.search(sep) > 0 )
+                ? data.split(sep)
+                : [data]
+                       )
+                : []
+                                  )
                 );
             for (; i < ret.length; i++)if ($.type(ret[i]) == 'number')ret[i] = +ret[i];
             return ret;

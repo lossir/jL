@@ -6,7 +6,7 @@
  * Time     15:19
  *
  * @author  Lossir  lossir@mail.ru
- * @version 2.0
+ * @version 2.1
  *
  * @augments jL
  * @requires jL,jQuery
@@ -14,23 +14,25 @@
 
 
 jL.setUtilities('calendar', function (date, options) {
+    "use strict";
 
-    date = ($.type(date) == 'date' ? date : new Date()) || new Date();
+    date = ($.type(date) === 'date' ? date : new Date()) || new Date();
     var settings = {
 //        currentDate  : date || new Date(),
         dayNamesShort: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
         dayNamesFull : ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
-        monthNamesFull : ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+        monthNamesFull : ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+        monthNamesFullParent  : ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
     }, methods = {
         /**
          * Получить заданный месяц в виде массива(недели) массивов(дни)
          */
         getMonthsInArray: function (month) {
-            date = $.type(this) == 'date' ? this : date;
+            date = $.type(this) === 'date' ? this : date;
             if(month){
                 date.setMonth(month);
             }
-            var dateShift = (new Date(date).jL().set('date', 1).getDay()) - 2,
+            var dateShift = (new Date(date).jL().set('date', 0).getDay()) - 1,
                 weeksCount = function () {
                     return Math.ceil((date.jL().getCountDays() + dateShift) / 7);
                 }(),
@@ -53,7 +55,7 @@ jL.setUtilities('calendar', function (date, options) {
                             dateItem = new Date(date.getFullYear(),date.getMonth(),dateIndex);
                         } else {
                             dateIndex = 0;
-                            dateItem = new Date(date.getFullYear(),date.getMonth(),daysIndex-dateShift)
+                            dateItem = new Date(date.getFullYear(),date.getMonth(),daysIndex-dateShift);
                         }
                     } else {
                         dateIndex = 0;
@@ -68,13 +70,12 @@ jL.setUtilities('calendar', function (date, options) {
         /**
          * Возвращает название дня
          *
-         * @param [short=false]
+         * @param [shortName=false]
          * @returns {String}
          */
-        getDayName      : function (short) {
+        getDayName      : function (shortName) {
             var day = date.getDay();
-            return (short
-                ? settings.dayNamesShort
+            return (shortName ? settings.dayNamesShort
                 : settings.dayNamesFull)[day > 0 ? day-1 : 6];
         },
         /**
@@ -85,6 +86,15 @@ jL.setUtilities('calendar', function (date, options) {
         getMonthName      : function () {
             var month = date.getMonth();
             return settings.monthNamesFull[month];
+        },
+        /**
+         * Возвращает название месяца в родительском падеже
+         *
+         * @returns {String}
+         */
+        getMonthNameParent      : function () {
+            var month = date.getMonth();
+            return settings.monthNamesFullParent[month];
         },
         /**
          * Получить количество дней в месяце
@@ -112,15 +122,15 @@ jL.setUtilities('calendar', function (date, options) {
          * @returns {Boolean}
          */
         isYearCurrent: function() {
-            return date.getFullYear() == new Date().getFullYear();
+            return date.getFullYear() === new Date().getFullYear();
         },
         /**
          * Является ли месяц проверямой даты, текущим месяцем
          *
          * @returns {Boolean}
          */
-        isMonthCurrent: function () {
-            return date.getMonth() == new Date().getMonth();
+        isMonthCurrent: function (month) {
+            return (month || date.getMonth()) === date.getMonth();
         },
         /**
          * Является ли число проверямой даты, текущим числом
@@ -129,7 +139,7 @@ jL.setUtilities('calendar', function (date, options) {
          * @returns {Boolean}
          */
         isDayCurrent  : function (day) {
-            return (day || date.getDate()) == new Date().getDate();
+            return (day || date.getDate()) === new Date().getDate();
         },
         /**
          * Является ли проверяемая дата текущей датой
@@ -137,18 +147,48 @@ jL.setUtilities('calendar', function (date, options) {
          * @returns {Boolean}
          */
         isDateCurrent  : function () {
-            return (date.getMonth() == new Date().getMonth()) && (date.getFullYear() == new Date().getFullYear()) && (date.getDate() == new Date().getDate());
+            return (date.getMonth() === new Date().getMonth()) && (date.getFullYear() === new Date().getFullYear()) && (date.getDate() === new Date().getDate());
+        },
+        /**
+         * Является ли проверяемая дата прошедшей
+         *
+         * @returns {Boolean}
+         */
+        isDateFuture  : function () {
+            var dateCurrent = new Date();
+            dateCurrent.setDate( dateCurrent.getDate()-1 );
+            return date.getTime() >= dateCurrent.getTime();
         },
         /**
          * Получить массив названий дней
          *
-         * @returns {{short: *, full: *}}
+         * @returns {{shortName: *, full: *}}
          */
         getDayNames : function(){
             return {
-                'short':settings.dayNamesShort,
+                'shortName':settings.dayNamesShort,
                 'full':settings.dayNamesFull
             };
+        },
+        /**
+         * Получить дату с предыдущим месяцем
+         *
+         */
+        setMonthPrev : function(){
+            var newDate = new Date(date);
+            newDate.setMonth(date.getMonth()-1);
+            newDate.setDate(1);
+            return newDate;
+        },
+        /**
+         * Получить дату со следующим месяцем
+         *
+         */
+        setMonthNext : function(){
+            var newDate = new Date(date);
+            newDate.setMonth(date.getMonth()+1);
+            newDate.setDate(1);
+            return newDate;
         },
         /**
          * Получить массив названий месяцев
@@ -170,11 +210,11 @@ jL.setUtilities('calendar', function (date, options) {
         return methods;
     });
 
-/*
-    for(var key in methods) if (methods.hasOwnProperty(key)) {
-        jL.expansionDefineProperty( Date.prototype, key, methods[key] )
-    }
-*/
+    /*
+     for(var key in methods) if (methods.hasOwnProperty(key)) {
+     jL.expansionDefineProperty( Date.prototype, key, methods[key] )
+     }
+     */
 
     return methods;
 
