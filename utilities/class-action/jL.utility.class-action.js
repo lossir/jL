@@ -47,7 +47,7 @@
                         jL.calendar(date).getMonthName();
                         var datePickerInput = $(this),
                             datePickerVariable = {},
-                            datePickerTemplate = '<div class="'+classPrefix+'date-picker-control"><div class="'+classPrefix+'date-picker-month-prev">&lt;</div><div class="'+classPrefix+'date-picker-month"></div><div class="'+classPrefix+'date-picker-month-next">&gt;</div></div><div class="'+classPrefix+'date-picker-table"><table class="w-100"><thead><tr>{head}</tr></thead><tbody>{days}</tbody></table></div>',
+                            datePickerTemplate = '<div class="'+classPrefix+'date-picker-control"><div class="'+classPrefix+'date-picker-month-prev">&lt;</div><div class="'+classPrefix+'date-picker-month"></div><div class="'+classPrefix+'date-picker-year"></div><div class="'+classPrefix+'date-picker-month-next">&gt;</div></div><div class="'+classPrefix+'date-picker-table"><table class="w-100"><thead><tr>{head}</tr></thead><tbody>{days}</tbody></table></div>',
 //                            datePickerContain = $this.find(getSelector('date-picker-contain')).empty().hide().appendTo('body'),
                             datePickerContainTemplate = '<div class="'+classPrefix+'date-picker-contain">{calendar}</div>',
                             datePickerContain,
@@ -93,6 +93,9 @@
 //                                        .html(jL.strReplace(datePickerTemplate, ['{head}', '{days}'], [head, weeksTemplate]))
                                         .find(getSelector('date-picker-month'))
                                             .html(jL.calendar(date).getMonthName());
+                                    datePickerContain
+                                        .find(getSelector('date-picker-year'))
+                                            .html(date.getFullYear());
                                 };
                                 calendar();
                                 datePickerContain
