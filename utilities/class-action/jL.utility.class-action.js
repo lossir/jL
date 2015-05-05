@@ -14,7 +14,7 @@
 (function($, jL, undefined){
     "use strict";
 
-    jL.setUtilities('classAction1', function () {
+    jL.setUtilities('classAction', function () {
 
         var classPrefix = 'ca-',
             getSelector = function(classes, sep){
@@ -233,7 +233,7 @@
                                     select
                                         .prop('selectedIndex',option.index)
                                         .trigger('change');
-                                    selectLabelCSS.text(option.label||option.innerText);
+                                    selectLabelCSS.text(option.innerText||option.innerText);
                                 },
                                 getMainOptions = function(){
                                     var contain = optionsCSS.clone();
@@ -263,12 +263,11 @@
                                 },
                                 getGroupOptions = function(options){
                                     var contain = groupOptionsCSS.clone();
-//                                console.log(options);
                                     options.each(function(){
                                         var option = this;
                                         if(this.tagName==='OPTION'){
                                             var optionTarget = optionCSS.clone()
-                                                .append(optionTargetCSS.clone().text(option.innerText||option.innerHTML).on('click',
+                                                .append(optionTargetCSS.clone().text(option.innerText||option.innerHTML||123).on('click',
                                                     function () {
                                                         optionChange(option);
                                                     }));

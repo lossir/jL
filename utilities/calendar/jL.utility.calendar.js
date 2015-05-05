@@ -35,7 +35,7 @@ jL.setUtilities('calendar', function (date, options) {
             var dateShift = (new Date(date).jL().set('date', 0).getDay()) - 1,
                 weeksCount = function () {
                     return Math.ceil((date.jL().getCountDays() + dateShift) / 7);
-                }(),
+                }() + 1,
                 weekIndex = 0,
                 daysCount = 7,
                 dayIndex,
