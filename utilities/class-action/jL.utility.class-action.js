@@ -331,6 +331,7 @@
                                     exposed.slideToggle();
                                     break;
                             }
+                            items.removeClass(switchClass);
                             if(elem.hasClass(classPrefix+'switch-reverse') && tags.hasClass('selected')){
                                 tags.removeClass(switchClass);
                             } else {
