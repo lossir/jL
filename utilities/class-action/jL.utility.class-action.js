@@ -309,7 +309,7 @@
                         var $this = $(this),
                             switchClass = 'selected',
                             items = $this.find(getSelector('switch-acting switch-exposed'));
-                        $this.on('click', getSelector('switch-acting'), function(index){
+                        $this.off('click.ca-switch').on('click.ca-switch', getSelector('switch-acting'), function(index){
                             var elem = $(this),
                                 tags = getSwitchTag(elem, $this),
                                 acting = tags.filter(getSelector('switch-acting')),
@@ -317,12 +317,7 @@
                                 data = getSwitchData(elem);
                             switch (data){
                                 case'now':
-                                    if(exposed.hasClass(switchClass)) {
-                                        exposed.show();
-                                    }
-                                    else {
-                                        exposed.hide();
-                                    }
+                                    exposed.fadeToggle(0);
                                     break;
                                 case'fade':
                                     exposed.fadeToggle();
@@ -331,8 +326,8 @@
                                     exposed.slideToggle();
                                     break;
                             }
-                            items.removeClass(switchClass);
-                            if(elem.hasClass(classPrefix+'switch-reverse') && tags.hasClass('selected')){
+                            items.not(elem).removeClass(switchClass);
+                            if(elem.hasClass(classPrefix+'switch-reverse') && tags.hasClass(switchClass)){
                                 tags.removeClass(switchClass);
                             } else {
                                 items.filter(getSelector('switch-exposed')).removeClass(switchClass);
