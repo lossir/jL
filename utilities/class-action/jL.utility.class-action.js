@@ -167,12 +167,13 @@
                     /**
                      */
                     'action': function () {
+                        var elems = $(this);
                         jL.IEBind.add('8,9', function(){
-                            $(this).each(function () {
+                            elems.each(function () {
                                 var $this = $(this),
                                     placeholder = $this.attr('placeholder'),
                                     tag = $this.prop('tagName'),
-                                    color = $this.css('color'),
+                                    color = $this.prop('color'),
                                     method = (tag === 'INPUT') ? 'val'
                                         : 'text',
                                     placeholderShow = function () {
@@ -189,10 +190,8 @@
                                         }()
                                             : value);
                                     };
-                                $this.on({
-                                    focus: placeholderShow,
-                                    blur : placeholderHide
-                                });
+                                $this.on( "focus", placeholderShow);
+                                $this.on( "blur", placeholderHide);
                                 placeholderHide();
 //                $this[method](placeholder);
                             });
