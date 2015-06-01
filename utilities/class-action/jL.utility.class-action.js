@@ -5,7 +5,7 @@
  * Time     12:00
  *
  * @author  Lossir  lossir@mail.ru
- * @version 1.0
+ * @version 1.2
  *
  * @augments jL
  * @requires jL,jQuery
@@ -20,11 +20,17 @@
             getSelector = function(classes, sep){
                 return '.'+classPrefix+classes.split(sep||' ').join(',.'+classPrefix);
             },
-            getSwitchData = function(item){
+            getSwitchData = function(item, classAction){
                 var classes = item.prop('class'),
-                    reg = (new RegExp('.*'+(classPrefix.replace('-','\\-')+'switch\\-data\\-')+'(\\w*)\\s.*')),
-                    data = classes.replace(reg, '$1');
-                return data === classes ? null : data;
+                    reg = (new RegExp((classPrefix.replace('-','\\-')+classAction+'\\-data\\-')+'(\\w*)', "gm")),
+//                    data = classes.replace(reg, '$1');
+                    data = {};
+                item.prop('class').replace(reg, function(){
+                    var dataItem = arguments[1].split('_');
+//                    console.log(dataItem);
+                    data[dataItem[0]] = dataItem[1] || true;
+                });
+                return data;
             },
             getSwitchTag = function(item, context) {
                 var classes = item.prop('class'),
@@ -192,7 +198,7 @@
                      * <pre>
                      * Создание стилизованного тега select
                      * Необходимо вывести тег селект по всем правилам и заранее сверстать стилизованный шаблон для него
-                     * затем к соответствующим элементам макета добавить класса "метки"
+                     * затем к соответствующим элементам макета добавить "классы-метки"
                      *
                      * prefix + "select-css-select"         Главный контейнер макета
                      * prefix + "select-css-group"          Элемент для отображение optgroup
@@ -233,7 +239,7 @@
                                     select
                                         .prop('selectedIndex',option.index)
                                         .trigger('change');
-                                    selectLabelCSS.text(option.innerText||option.innerText);
+                                    selectLabelCSS.text(option.innerText||option.innerHTML);
                                 },
                                 getMainOptions = function(){
                                     var contain = optionsCSS.clone();
@@ -308,32 +314,59 @@
                     'action': function () {
                         var $this = $(this),
                             switchClass = 'selected',
-                            items = $this.find(getSelector('switch-acting switch-exposed'));
-                        $this.off('click.ca-switch').on('click.ca-switch', getSelector('switch-acting'), function(index){
+                            prevElem;
+                        $this.find(getSelector('switch-acting')).each(function() {
                             var elem = $(this),
-                                tags = getSwitchTag(elem, $this),
-                                acting = tags.filter(getSelector('switch-acting')),
-                                exposed = tags.filter(getSelector('switch-exposed')),
-                                data = getSwitchData(elem);
-                            switch (data){
-                                case'now':
-                                    exposed.fadeToggle(0);
-                                    break;
-                                case'fade':
-                                    exposed.fadeToggle();
-                                    break;
-                                case'slide':
-                                    exposed.slideToggle();
-                                    break;
-                            }
-                            items.not(elem).removeClass(switchClass);
-                            if(elem.hasClass(classPrefix+'switch-reverse') && tags.hasClass(switchClass)){
-                                tags.removeClass(switchClass);
-                            } else {
-                                items.filter(getSelector('switch-exposed')).removeClass(switchClass);
-                                tags.addClass(switchClass);
-                            }
-                            $this.trigger('ca-switch', tags );
+                                prevElem = elem,
+                                data = getSwitchData(elem, 'switch'),
+                                event = data.event || 'click';
+//                            console.log(elem,event);
+//                            elem.on(event+'.ca-switch', function () {
+                            elem.on(event+'.ca-switch', function (e, trig) {
+                                if(trig) {
+                                    return;
+                                }
+                                var tags = getSwitchTag(elem, $this),
+                                    acting = tags.filter(getSelector('switch-acting')),
+                                    exposed = tags.filter(getSelector('switch-exposed')),
+//                                data = getSwitchData(elem, 'switch'),
+                                    items = $this.find(getSelector('switch-acting switch-exposed'));
+//                            console.log(data);
+                                if (data.hasOwnProperty('effect')) {
+                                    switch (data.effect) {
+                                        case'now':
+                                            exposed.fadeToggle(0);
+                                            break;
+                                        case'fade':
+                                            exposed.fadeToggle();
+                                            break;
+                                        case'slide':
+                                            exposed.slideToggle();
+                                            break;
+                                    }
+                                }
+//                            items.not(elem).removeClass(switchClass);
+//                                console.log(tags.eq(1).prop('class'));
+//                                console.dir(elem);
+//                                if(!trig){
+                                    if (elem.hasClass(classPrefix + 'switch-reverse') && tags.hasClass(switchClass)) {
+                                        items.removeClass(switchClass);
+//                                        tags.removeClass(switchClass);
+                                    }
+                                    else {
+//                                        items.filter(getSelector('switch-exposed')).removeClass(switchClass);
+                                        items.removeClass(switchClass);
+//                                        if(trig) {
+//                                        }
+                                        tags.addClass(switchClass);
+                                    }
+//                                console.log(elem.prop($.expando),prevElem.prop($.expando));
+//                                if(elem.prop($.expando) !== prevElem.prop($.expando) ) {
+//                                    prevElem.trigger(event, true);
+//                                }
+                                    $this.trigger('ca-switch', [tags, data]);
+//                                }
+                            });
                         });
                     }
                 }
