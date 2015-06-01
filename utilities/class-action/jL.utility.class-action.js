@@ -163,6 +163,43 @@
                     }
                 },
                 {
+                    'className' : 'placeholder',
+                    /**
+                     */
+                    'action': function () {
+                        jL.IEBind.add('8,9', function(){
+                            $(this).each(function () {
+                                var $this = $(this),
+                                    placeholder = $this.attr('placeholder'),
+                                    tag = $this.prop('tagName'),
+                                    color = $this.css('color'),
+                                    method = (tag === 'INPUT') ? 'val'
+                                        : 'text',
+                                    placeholderShow = function () {
+                                        if($this[method]() === placeholder){
+                                            $this.css('color', color);
+                                            $this[method]('');
+                                        }
+                                    },
+                                    placeholderHide = function () {
+                                        var value = $this[method]();
+                                        $this[method](value === placeholder || value === '' ? function () {
+                                            $this.css('color', '#aaaaaa');
+                                            return placeholder;
+                                        }()
+                                            : value);
+                                    };
+                                $this.on({
+                                    focus: placeholderShow,
+                                    blur : placeholderHide
+                                });
+                                placeholderHide();
+//                $this[method](placeholder);
+                            });
+                        });
+                    }
+                },
+                {
                     'className' : 'form-ajax',
                     /**
                      * Переделывает обычные формы в ajax-формы

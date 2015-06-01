@@ -14,19 +14,21 @@
 //Time: 10:51
 //TODO: Написать "перехватчик" ajax запросов, для отслеживания появления новых элементов
 
-;
+
 (function ($) {
+    "use strict";
 
     var expansionDefineProperty = function(object, name, value){
         if(!object[name]){
-            if(Object.defineProperty && ('\v'!='v')){
+            if(Object.defineProperty && ('\v'!=='v'.toString())){
                 Object.defineProperty(object, name,{
                     configurable: true,
                     enumerable: false,
                     writable: true,
                     value: value
                 });
-            } else {
+            }
+            else {
                 object[name] = value;
             }
         }
@@ -37,34 +39,42 @@
         var newArray = [],
             i = 0;
         for(; i<this.length; i++){
-            if(!!test(this[i], i, this))newArray.push(this[i]);
+            if(!!test(this[i], i, this)) {
+                newArray.push(this[i]);
+            }
         }
         return newArray;
     });
     expansionDefineProperty(Array.prototype, 'indexOf', function(value) {
         for(var i=0; i<this.length; i++){
-            if(value==this[i])return i;
+            if(value===this[i]) {
+                return i;
+            }
         }
-        return -1
+        return -1;
     });
     expansionDefineProperty(Array.prototype, 'diff', function(a) {
         return this.filter(function(i) {return a.indexOf(i) < 0;});
     });
     expansionDefineProperty(Array.prototype, 'forEach', function (func) {
         func = func || false;
-        var key
-            , result
-            , mas = ($.type(this) == 'array')
-                ? []
-                : {};
-        for (key in this) if (this.hasOwnProperty(key))  {
-            if (func) {
-                result = func(this[key], +key, this);
-                if (result !== 'forEachStop') mas[key] = result;
-                else break;
-            }
-            else {
-                mas[key] = this[key];
+        var key,
+            result,
+            mas = ($.type(this) === 'array') ? [] : {};
+        for (key in this) {
+            if (this.hasOwnProperty(key))  {
+                if (func) {
+                    result = func(this[key], +key, this);
+                    if (result !== 'forEachStop') {
+                        mas[key] = result;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    mas[key] = this[key];
+                }
             }
         }
         return mas;
@@ -122,17 +132,17 @@
                                     setTimeout(function () {
                                         action.func();
                                         action.started = true;
-                                    }, 100)
+                                    }, 100);
                                 }
                             });
-                        })
+                        });
                     }
                 }};
             (function () {
-                if ('\v' == 'v') {
+                if ('\v' === 'v'.toString()) {
                     $this.ie = 8;
                 }
-                else if (!!~navigator.userAgent.indexOf('MSIE 9.0;')) {
+                else if (navigator.userAgent.indexOf('MSIE 9.0;') > 0) {
                     $this.ie = 9;
                 }
                 var ieTimer = setInterval(function () {
@@ -161,15 +171,17 @@
          * @returns {Array}
          */
         'onePropObject':         function (arr, prop, func) {
-            var newArr = []
-                , index;
+            var newArr = [],
+                index;
             func = func || null;
-            for (index in arr) if (arr.hasOwnProperty(index)) {
-                if(func){
-                    newArr.push(func(+index, arr[index][prop], arr[index]));
-                }
-                else {
-                    newArr.push(arr[index][prop]);
+            for (index in arr) {
+                if (arr.hasOwnProperty(index)) {
+                    if(func){
+                        newArr.push(func(+index, arr[index][prop], arr[index]));
+                    }
+                    else {
+                        newArr.push(arr[index][prop]);
+                    }
                 }
             }
             return newArr;
@@ -206,7 +218,11 @@
          */
         'length':         function (obj, calcPrototype) {
             var length = 0, k;
-            for (k in obj) if(obj.hasOwnProperty(k) || (calcPrototype || false)) length++;
+            for (k in obj) {
+                if(obj.hasOwnProperty(k) || (calcPrototype || false)) {
+                    length++;
+                }
+            }
             return length;
         },
 
@@ -220,9 +236,7 @@
          */
         'arrayChunk':     function (input, size) {
             for (var x, i = 0, c = -1, l = input.length, n = []; i < l; i++) {
-                (x = i % size)
-                    ? n[c][x] = input[i]
-                    : n[++c] = [input[i]];
+                (x = i % size) ? n[c][x] = input[i] : n[++c] = [input[i]];
             }
             return n;
         },
@@ -242,10 +256,9 @@
             replace = jL._dataToArr(replace);
             return str.replace(new RegExp('(' + search.join('|') + ')', 'g'), function () {
                 index = search.indexOf(+arguments[1]);
-                return replace[!!~index
-                    ? index
+                return replace[(index > 0 ) ? index
                     : search.indexOf('' + arguments[1])] || arguments[1];
-            })
+            });
         },
 
         /**
@@ -256,15 +269,13 @@
          * @return {Boolean}
          */
         'testFunc': function (func) {
-            var _this = this || window
-                ,arg = arguments;
-            return (func !== false && typeof(func) == 'function')
-                ? (function () {
-                console.log(arg);
+            var _this = this || window,
+                arg = arguments;
+            return (func !== false && typeof(func) === 'function') ? (function () {
                 func.apply(_this, Array.prototype.slice.call(arg, 1));
                 return true;
             }())
-                : false
+                : false;
         },
 
         /**
@@ -307,7 +318,7 @@
         'random':         function (min, max) {
             min = min || 0;
             max = max || 9;
-            return Math.random() * (max - min + 1) + min ^ 0;
+            return Math.ceil( Math.random() * (max - min + 1) + min );
         },
 
         /**
@@ -320,17 +331,16 @@
          */
         '_dataToArr':     function (data, sep) {
             sep = sep || ',';
-            var i = 0, ret = (( $.type(data) == 'array' )
-                ? data
-                : (( $.type(data) == 'string' )
-                ? (( data.search(sep) > 0 )
-                ? data.split(sep)
-                : [data]
-                       )
-                : []
-                                  )
+            var i = 0, ret = (( $.type(data) === 'array' ) ? data
+                : (( $.type(data) === 'string' ) ? (( data.search(sep) > 0 ) ? data.split(sep)
+                : [data])
+                : [])
                 );
-            for (; i < ret.length; i++)if ($.type(ret[i]) == 'number')ret[i] = +ret[i];
+            for (; i < ret.length; i++) {
+                if ($.type(ret[i]) === 'number') {
+                    ret[i] = +ret[i];
+                }
+            }
             return ret;
         },
 
@@ -347,9 +357,11 @@
             element = element || window;
             var nameTimer = "laggedHandlerTimer" + this.generator();
             $(element).off(event).on(event, function (e) {
-                if (element.hasOwnProperty(nameTimer)) clearTimeout(element[nameTimer]);
+                if (element.hasOwnProperty(nameTimer)) {
+                    clearTimeout(element[nameTimer]);
+                }
                 element[nameTimer] = setTimeout(function () {
-                    handler.call(element, e)
+                    handler.call(element, e);
                 }, delay);
             });
         },
@@ -393,16 +405,15 @@
             mask = mask || /[\w]/g;
             length = length || 15;
             useSpecialSymbol = useSpecialSymbol || false;
-            var sample = []
-                , genStr = ""
-                , normal = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
-                , special = "!@#$%^&*()+=-№;:?\|/~`"
-                , i = 0;
+            var sample = [],
+                genStr = "",
+                normal = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz",
+                special = "!@#$%^&*()+=-№;:?\\|/~`",
+                i = 0;
             normal.replace(mask, function () {
                 sample.push(arguments[0]);
             });
-            sample = sample.concat(useSpecialSymbol
-                ? special.split("")
+            sample = sample.concat(useSpecialSymbol ? special.split("")
                 : []);
             for (; i < length; i++) {
                 genStr += sample[this.random(0, sample.length - 1)];
@@ -423,75 +434,8 @@
             Child.prototype = new F();
             Child.prototype.constructor = Child;
             Child.superclass = Parent.prototype;
-        },
-
-        /**
-         * Динамическое добавление файла js||css
-         *
-         * @param src
-         * @param callback
-         * @return {Array}
-         */
-        // TODO: устарело, надо переписать...
-        'fileToConnect':  function (src, callback) {
-            var u = this, file, first, i = 0, response = [], type, afterLoad = function () {
-                if ($.type(callback) == 'function') {
-                    callback()
-                }
-            }, data = {
-                'js':  {
-                    'tag':  'script',
-                    'src':  'src',
-                    'attr': {
-                        'type': 'text/javascript'
-                    }
-                },
-                'css': {
-                    'tag':  'link',
-                    'src':  'href',
-                    'attr': {
-                        'type': 'text/css',
-                        'rel':  'stylesheet'
-                    }
-                }
-            };
-            src = u._dataToArr(src);
-            for (; i < src.length; i++) {
-                type = src[i].replace(/.*\.(js|css)$/, '$1');
-                if ($('[' + data[type].src + '="' + src[i] + '"]').eq(0).length == 0) {
-                    file = document.createElement(data[type].tag);
-                    for (var j in data[type].attr) {
-                        file['' + j] = data[type].attr['' + j];
-                    }
-                    file[ data[type].src ] = src[i];
-                    first = document.getElementsByTagName("head")[0].firstChild;
-                    if (document.getElementsByTagName("head")[0].insertBefore(file, first)) {
-                        response.push(true);
-                    }
-                    else response.push(false);
-
-                    file.onload = function () {
-                        if (!this.executed) {
-                            this.executed = true;
-                            afterLoad();
-                        }
-                    };
-                    file.onreadystatechange = function () {
-                        if (this.readyState == "complete" || this.readyState == "loaded") {
-                            setTimeout(function () {
-                                afterLoad();
-                            }, 1);  // (1)
-                            this.onreadystatechange = null;
-                        }
-                    }
-                }
-                else {
-                    response.push(false);
-                    afterLoad();
-                }
-            }
-            return response;
         }
+
     };
 
     /**
@@ -524,10 +468,12 @@
          */
         this.setPlugin = function (nameOrPlugins, plugin) {
             if (typeof nameOrPlugins === "object") {
-                for (var key in nameOrPlugins) if(nameOrPlugins.hasOwnProperty(key)) {
-                    if (!$.fn[this.prefixForPlugin + key]) {
-                        _variables[key] = {};
-                        $.fn[this.prefixForPlugin + key] = nameOrPlugins[key];
+                for (var key in nameOrPlugins) {
+                    if(nameOrPlugins.hasOwnProperty(key)) {
+                        if (!$.fn[this.prefixForPlugin + key]) {
+                            _variables[key] = {};
+                            $.fn[this.prefixForPlugin + key] = nameOrPlugins[key];
+                        }
                     }
                 }
                 return true;
@@ -554,9 +500,11 @@
          */
         this.setSelector = function (nameOrSelectors, selector) {
             if (typeof nameOrSelectors === "object") {
-                for (var key in nameOrSelectors) if(nameOrSelectors.hasOwnProperty(key)) {
-                    if (!$.expr[':'][this.prefixForSelector + key]) {
-                        $.expr[':'][this.prefixForSelector + key] = nameOrSelectors[key];
+                for (var key in nameOrSelectors) {
+                    if(nameOrSelectors.hasOwnProperty(key)) {
+                        if (!$.expr[':'][this.prefixForSelector + key]) {
+                            $.expr[':'][this.prefixForSelector + key] = nameOrSelectors[key];
+                        }
                     }
                 }
                 return true;
@@ -586,7 +534,9 @@
             init = init || false;
             this.prototype[name] = _utilities;
             if (typeof this.prototype[name] === "function") {
-                if (init) this.prototype[name].call();
+                if (init) {
+                    this.prototype[name].call();
+                }
 
                 return true;
             }
