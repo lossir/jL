@@ -233,177 +233,133 @@
                     /**
                      * <pre>
                      * Создание стилизованного тега select
-                     * Необходимо вывести тег селект по всем правилам и заранее сверстать стилизованный шаблон для него
-                     * затем к соответствующим элементам макета добавить "классы-метки"
-                     *
-                     * prefix + "select-css-select"         Главный контейнер макета
-                     * prefix + "select-css-group"          Элемент для отображение optgroup
-                     * prefix + "select-css-options"        Контейнер для тегов option
-                     * prefix + "select-css-option"         Элемент для отображение option
-                     * prefix + "select-css-group-options"  Контейнер для тегов option внутри элемента optgroup
-                     * prefix + "select-css-select-label"   Элемент для вывода текста выбранного элемента
-                     * prefix + "select-css-group-label"    Элемент для вывода названия optgroup
-                     *
                      */
                     'action': function () {
-                        var $this = $(this),
-                            selects = $this.find('select'),
-                            selectCSS = $this.find(getSelector('select-css-select'));
-                        selects.each(function(index){
-                            var select = $(this),
-                                multiple = select.prop('multiple'),
-                                size = select.prop('size'),
-                                groups = select.find('optgroup'),
-                                mainOptions = select.find('>*'),
-                                selectLabel = mainOptions.filter('[selected]').text() || '',
-                                options = select.find('option'),
-                                getCSS = function(_class, _parent){
-                                    _parent = _parent || $this;
-                                    return _parent.find(getSelector(_class)).eq(0).clone().empty();
-                                },
-                                groupCSS = getCSS('select-css-group'),
-                                optionsCSS = getCSS('select-css-options'),
-                                optionCSS = getCSS('select-css-option'),
-                                optionTargetCSS = getCSS('select-css-option-target'),
-                                groupOptionsCSS = getCSS('select-css-group-options'),
-                                selectLabelCSS = getCSS('select-css-select-label'),
-                                groupLabelCSS = getCSS('select-css-group-label'),
-                                groupLabelTargetCSS = getCSS('select-css-group-label-target');
 
-
-                            var optionChange = function(option){
-                                    select
-                                        .prop('selectedIndex',option.index)
-                                        .trigger('change');
-                                    selectLabelCSS.text(option.innerText||option.innerHTML);
-                                },
-                                getMainOptions = function(){
-                                    var contain = optionsCSS.clone();
-                                    mainOptions.each(function(){
-                                        var option = this;
-                                        if(this.tagName==='OPTION') {
-                                            var optionTarget = optionCSS.clone();
-                                            optionTarget.append(optionTargetCSS.clone().text(option.innerText||option.innerHTML).addClass(option.hasAttribute('disabled')?'c-gray65':'').on('click', function () {
-                                                if(!option.hasAttribute('disabled')){
-                                                    optionChange(option);
-                                                }
-                                            }));
-                                            contain.append(optionTarget);
-                                        }
-                                        else if(this.tagName==='OPTGROUP'){
-                                            contain.append(getGroup(option));
-                                        }
+                        var select = this,
+                            $select = $(select),
+                            contain = document.createElement('div'),
+                            optionSelecting = function () {
+                                var li = $(contain.querySelectorAll('li[data-index]'))
+                                    .removeClass("selected");
+                                if(select.multiple) {
+                                    Array.prototype.forEach.call(select.selectedOptions, function (item) {
+                                        li[item.indexOf].className += " selected";
                                     });
-                                    return contain;
-                                },
-                                getGroup = function(group){
-                                    var contain = groupCSS.clone();
-                                    contain
-                                        .append(groupLabelCSS.clone().append(groupLabelTargetCSS.clone().text(group.label)))
-                                        .append(getGroupOptions($(group).find('>option')));
-                                    return contain;
-                                },
-                                getGroupOptions = function(options){
-                                    var contain = groupOptionsCSS.clone();
-                                    options.each(function(){
-                                        var option = this;
-                                        if(this.tagName==='OPTION'){
-                                            var optionTarget = optionCSS.clone()
-                                                .append(optionTargetCSS.clone().text(option.innerText||option.innerHTML||123).on('click',
-                                                    function () {
-                                                        optionChange(option);
-                                                    }));
-                                            contain.append(optionTarget);
-                                        }
-                                        else if(option.tagName==='OPTGROUP'){
-                                            contain.append(getGroup(option));
-                                        }
-                                    });
-                                    return contain;
-                                };
+                                }
+                                else {
+                                    li[select.selectedIndex].className += " selected";
+                                }
+                            },
+                            insertSelectLabel = function () {
+                                contain.children[0].innerHTML = select[select.selectedIndex].label || select[select.selectedIndex].innerText;
+                            },
+                            build = function () {
+                                var optionHTML = '',
+                                    index = -1,
+                                    getLiHTML = function (item) {
+                                        item.indexOf = index;
+                                        return '<li class="option'+(item.disabled?' disabled':'')+''+(item.selected?' selected':'')+'" data-value="'+item.value+'" data-index="'+index+'"><span class="label">'+(item.label||item.innerText)+'</span></li>';
+                                    };
+                                Array.prototype.forEach.call(select.children, function (item) {
+                                    if(item.tagName === "OPTION") {
+                                        index++;
+                                        optionHTML += getLiHTML(item);
+                                    }
+                                    else {
+                                        var groupHTML = '';
+                                        Array.prototype.forEach.call(item.children, function (item) {
+                                            ++index;
+                                            groupHTML += getLiHTML(item);
+                                        });
+                                        optionHTML += '<li class="option-group"><span class="label">'+item.label+'</span><ul class="group">'+groupHTML+'</ul></li>';
+                                    }
+                                });
+                                contain.innerHTML = '<div class="label"></div><ul class="select">'+optionHTML+'</ul>';
+                                if(!contain.parentElement) {
+                                    contain.className = "select-css";
+                                    select.parentElement.appendChild(contain);
+                                }
+                            },
+                            building = function () {
+                                build();
+                                insertSelectLabel();
+                                optionSelecting();
+                            };
 
-                            select.before(
-                                selectCSS.clone().empty().append(
-                                        selectLabelCSS.text(selectLabel)
-                                    )
-                                    .append(getMainOptions())
-                            );
+                        building();
 
-                            if(index === selects.length-1){
-//                                selectCSS.hide();
-                                selectCSS.remove();
+                        $(select.parentElement).on('click', 'li[data-index]:not(.disabled)', function (e) {
+                            var index = +(this.dataset ? this.dataset.index : this.getAttribute('data-index'));
+                            if (select.multiple && e.ctrlKey) {
+                                select[index].selected = !select[index].selected;
                             }
-                            select.hide();
-
-//                        console.log(groups);
-                            $this.on('click', function () {
-
-                            });
+                            else
+                                if (select.multiple && e.shiftKey) {
+                                    for(var j = 1, i, selectedIndex = select.selectedIndex; j<=Math.abs(Math.max(selectedIndex - index)); j++) {
+                                        i = (selectedIndex > index) ? selectedIndex-j : selectedIndex+j;
+                                        if(!select[i].disabled) {
+                                            select[i].selected = true;
+                                        }
+                                    }
+                                }
+                                else {
+                                    select.selectedIndex = index;
+                                }
+                            $select.trigger('change');
                         });
+
+                        $select.on({
+                            'rebuild': building,
+                            'change.select-css': function () {
+                                insertSelectLabel();
+                                optionSelecting();
+                                console.log('change');
+                            }
+                        });
+                        select.addEventListener("DOMNodeInserted", building, false);
+                        select.addEventListener("DOMNodeRemoved", building, false);
                     }
                 },
                 {
-                    'className' : 'switch',
+                    'className' : 'switch,switch-block',
                     /**
-                     *
+                     * Переключение класса "selected" между набором элементов
                      */
                     'action': function () {
                         var $this = $(this),
                             switchClass = 'selected',
-                            prevElem;
-                        $this.find(getSelector('switch-acting')).each(function() {
-                            var elem = $(this),
-                                prevElem = elem,
-                                data = getSwitchData(elem, 'switch'),
-                                event = data.event || 'click';
-//                            console.log(elem,event);
-//                            elem.on(event+'.ca-switch', function () {
-                            elem.on(event+'.ca-switch', function (e, trig) {
-                                if(trig) {
-                                    return;
-                                }
-                                var tags = getSwitchTag(elem, $this),
-                                    acting = tags.filter(getSelector('switch-acting')),
-                                    exposed = tags.filter(getSelector('switch-exposed')),
-//                                data = getSwitchData(elem, 'switch'),
-                                    items = $this.find(getSelector('switch-acting switch-exposed'));
-//                            console.log(data);
-                                if (data.hasOwnProperty('effect')) {
-                                    switch (data.effect) {
-                                        case'now':
-                                            exposed.fadeToggle(0);
-                                            break;
-                                        case'fade':
-                                            exposed.fadeToggle();
-                                            break;
-                                        case'slide':
-                                            exposed.slideToggle();
-                                            break;
-                                    }
-                                }
-//                            items.not(elem).removeClass(switchClass);
-//                                console.log(tags.eq(1).prop('class'));
-//                                console.dir(elem);
-//                                if(!trig){
-                                    if (elem.hasClass(classPrefix + 'switch-reverse') && tags.hasClass(switchClass)) {
-                                        items.removeClass(switchClass);
-//                                        tags.removeClass(switchClass);
-                                    }
-                                    else {
-//                                        items.filter(getSelector('switch-exposed')).removeClass(switchClass);
-                                        items.removeClass(switchClass);
-//                                        if(trig) {
-//                                        }
-                                        tags.addClass(switchClass);
-                                    }
-//                                console.log(elem.prop($.expando),prevElem.prop($.expando));
-//                                if(elem.prop($.expando) !== prevElem.prop($.expando) ) {
-//                                    prevElem.trigger(event, true);
-//                                }
-                                    $this.trigger('ca-switch', [tags, data]);
-//                                }
+                            items = this.children,
+                            $items = $(items);
+                        // элементы могут переключать класс "selected" внутри своего набора
+                        if($this.hasClass('ca-switch')) {
+                            $this.on('click', '>*', function (index) {
+                                $items.removeClass(switchClass);
+                                this.className += " "+switchClass;
                             });
-                        });
+                        }
+                        // или в другом наборе элементов
+                        else if($this.hasClass('ca-switch-block')) {
+                            var actingBlock = this.getElementsByClassName('ca-switch-acting')[0],
+                                $actingBlock = $(actingBlock),
+                            // элементы, которые воздействуют
+                                $acting = $actingBlock.length ? $actingBlock.find('>*') : $items,
+                            // элементы, на которые воздействуют
+                                $exposed = $this.find('.ca-switch-exposed>*');
+                            ($actingBlock.length ? $actingBlock : $items).on('click', '>*', function () {
+                                $acting.removeClass(switchClass);
+                                $exposed.removeClass(switchClass);
+                                this.className += " "+switchClass;
+                                var index = Array.prototype.indexOf.call(actingBlock.children,this);
+                                $exposed[index].className += " "+switchClass;
+                            });
+                        }
+                    }
+                },
+                {
+                    'className' : 'popup-image',
+                    'action': function () {
+
                     }
                 }
             ];
