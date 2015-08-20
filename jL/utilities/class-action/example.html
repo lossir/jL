@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 
     <link rel="stylesheet" href="/css/cutback.css"/>
+    <link rel="stylesheet" href="style.css"/>
 
     <!--<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>-->
     <!--<script src="//code.jquery.com/jquery-1.9.1.min.js"></script>-->
@@ -23,8 +24,12 @@
             font-family: monospace;
         }
 
-        .ca-switch .selected{
+        .selected {
             box-shadow: inset 0 0 0 1px red;
+        }
+
+        .disabled {
+            opacity: 0.4;
         }
 
         body > fieldset > legend{
@@ -41,68 +46,6 @@
         }
 
 
-        .select *{
-            cursor: default;
-        }
-        .select{
-            position: relative;
-            display: inline-block;
-        }
-        .select:not(.option){
-            border: solid 1px gray;
-        }
-        .select.option{
-            margin-right: 20px;
-        }
-        .select.option:after{
-            content: '>';
-            height: 100%;
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: red;
-        }
-        .select:hover > .options,
-        .select:hover > .options-group{
-            display: block;
-        }
-        .ca-select-css-select-label{
-            margin-right: 20px;
-        }
-        .ca-select-css-select-label:after{
-            content: '';
-            width: 20px;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: center no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpCQTBFMTA2RkQ0NzYxMUU0OThEQUU1REU1RTcwQUQ3NiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpCQTBFMTA3MEQ0NzYxMUU0OThEQUU1REU1RTcwQUQ3NiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkJBMEUxMDZERDQ3NjExRTQ5OERBRTVERTVFNzBBRDc2IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkJBMEUxMDZFRDQ3NjExRTQ5OERBRTVERTVFNzBBRDc2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+8pbAQgAAAbJJREFUeNpi/P//P8NQBkwMQxyMemDUA6MeGPXAqAcoAoxALAnERUBsBuUPBQCqfU8BcR8LkAgE4lQg5h9iga8HxPdAIX4XiJWGaAq6C8oDP4ZwFvjFDCR+A7HXEMzQf4C4BlYSNUAzxlDCdci+AWXmGUPI8dOgbkYBAkC8eQg4fj0Q8+FKV3JAfGIQO/4YEMsQyhzaQHxzEDr+GtRtRAFHIH4xiBz/HIhtSS2mooH4yyBw/GcgjiS3rC2ElrcD5fhfQJxHaWOvawA90EaNGo8LiBcOgOPnAzEntaptUSDeSUfHg+ojYWq3PVSA+CwdHH8aiBVp1YAyB+IHNHQ8qGlvQutWoDcQv6WB418DsRu9mrIJ0CKOWo4H9Uli6N0er6GiB8oGokMBas5OoYLj+wayM8UNxGsocPwKapb15AIJID5IhuP3ALHYYOmfagDxZRIcfwFarwwqYAfEz4hw/CMgth6sIwWhQPwRj+PfAXHAYB/uyMHRBAfVG2lDZcwG1I94jOT4h0CcSwuLmGnkgdvQEAfFxC1ocbmIFqOAjKPTrKMeGPXAqAdGPTDqgaEMAAIMAD49bSKZsS6vAAAAAElFTkSuQmCC');
-            background-size: 50% auto;
-        }
-        .options,
-        .options-group{
-            position: absolute;
-            display: none;
-            width: 100%;
-            border: solid 1px gray;
-            background: #fff;
-        }
-        .options{
-            /*bottom: 100%;*/
-        }
-        .options-group{
-            /*position: absolute;*/
-            /*display: none;*/
-            top: 0;
-            left: 100%;
-        }
-        .option{
-            width: 100%;
-            /*white-space: nowrap;*/
-        }
-        .option:hover{
-            background: rgb(201, 229, 255);
-        }
     </style>
 
     <title>Class Action - jL.utility.class-action.js</title>
@@ -116,7 +59,7 @@
         <legend>form.ca-form-ajax</legend>
         <form class="ca-form-ajax popup-thanks" action="/test.php" method="post">
             <label>
-                <input type="text" name="test" placeholder="enter test text"/>
+                <input type="text" name="test" placeholder="enter test text" class="ca-placeholder"/>
             </label>
             <label>
                 <input type="text" name="required" required="required" placeholder="required text"/>
@@ -127,180 +70,69 @@
 </fieldset>
 
 <fieldset class="mt-20">
+    <legend>Switch class "selected"</legend>
 
-    <fieldset>
-        <legend>*.ca-switch [.ca-switch-data-[fade,slide]]</legend>
-        <div class="ca-switch">
-            <div class="f-l">
-                <div class="mt-20">
-                    <div class="ca-switch-acting ca-switch-tag-1 ca-switch-action-too ca-switch-reverse p-5 bca-red cu-p">
-                        .ca-switch-acting
-                        <br/>
-                        .ca-switch-action-too
-                        <br/>
-                        .ca-switch-tag-1
-                        <br/>
-                        .ca-switch-reverse
-                    </div>
-                    <div class="ca-switch-exposed ca-switch-tag-1 p-5 mt-10 bca-green">
-                        .ca-switch-exposed
-                        <br/>
-                        .ca-switch-tag-1
-                    </div>
-                    <div class="ca-switch-acting ca-switch-tag-1 ca-switch-data-fade ca-switch-reverse ca-switch-action-too p-5 bca-red cu-p mt-10">
-                        .ca-switch-acting
-                        <br/>
-                        .ca-switch-tag-1
-                        <br/>
-                        .ca-switch-reverse
-                        <br/>
-                        .ca-switch-action-too
-                        <br/>
-                        .ca-switch-data-fade
-                    </div>
-                </div>
-            </div>
-            <div class="f-l ml-10">
-                <div class=" mt-20">
-                    <div class="ca-switch-acting ca-switch-tag-2 ca-switch-data-slide p-5 bca-red d-ib cu-p">
-                        .ca-switch-acting
-                        <br/>
-                        .ca-switch-tag-2
-                        <br/>
-                        .ca-switch-data-slide
-                    </div>
-                    <div class="ca-switch-exposed ca-switch-tag-2 ca-switch-tag-3 p-5 mt-10 bca-green">
-                        .ca-switch-exposed
-                        <br/>
-                        .ca-switch-tag-2
-                        <br/>
-                        .ca-switch-tag-3
-                    </div>
-                    <div class="ca-switch-acting ca-switch-tag-2 p-5 mt-10 bca-red cu-p">
-                        .ca-switch-acting
-                        <br/>
-                        .ca-switch-tag-2
-                    </div>
-                </div>
-            </div>
-            <div class="f-l ml-10">
-                <div class=" mt-20">
-                    <div class="ca-switch-acting ca-switch-tag-3 ca-switch-reverse p-5 bca-red cu-p">
-                        .ca-switch-acting
-                        <br/>
-                        .ca-switch-reverse
-                        <br/>
-                        .ca-switch-tag-3
-                    </div>
-                    <div class="ca-switch-exposed ca-switch-tag-3 p-5 mt-10 bca-green">
-                        .ca-switch-exposed
-                        <br/>
-                        .ca-switch-tag-3
-                    </div>
-                    <div class="ca-switch-acting ca-switch-data-now ca-switch-tag-3 ca-switch-reverse mt-10 p-5 bca-red cu-p">
-                        .ca-switch-acting
-                        <br/>
-                        .ca-switch-reverse
-                        <br/>
-                        .ca-switch-data-now
-                        <br/>
-                        .ca-switch-tag-3
-                    </div>
-                </div>
-            </div>
-        </div>
-    </fieldset>
 
-    <legend>Switch class "selected" and execute action from .ca-switch-data-[fade,slide]</legend>
     <fieldset class="mt-20">
         <legend>.ca-switch</legend>
-        <div class="ca-switch mt-20 ov-h">
-
-            <div class="f-l w-200px">
-
-                <div class="ca-switch-acting ca-switch-tag-1 cu-p p-5 h-60px">
-                    .ca-switch-acting
-                    <br/>
-                    .ca-switch-tag-1
-                </div>
-                <div class="ca-switch-acting ca-switch-action-too ca-switch-tag-2 cu-p p-5 h-70px">
-                    .ca-switch-acting
-                    <br/>
-                    .ca-switch-action-too
-                    <br/>
-                    .ca-switch-tag-2
-                </div>
-                <div class="ca-switch-acting ca-switch-tag-5 cu-p p-5 h-60px">
-                    .ca-switch-acting
-                    <br/>
-                    .ca-switch-tag-5
-                </div>
-                <div class="ca-switch-acting cu-p p-5 h-60px">
-                    .ca-switch-acting
-                </div>
-
-            </div>
-
-            <div class="f-l pl-1 bc-red h-250px"></div>
-
-            <div class="f-l w-200px">
-
-                <div class="ca-switch-exposed ca-switch-tag-1 p-5 h-60px">
-                    .ca-switch-exposed
-                    <br/>
-                    .ca-switch-tag-1
-                </div>
-                <div class="ca-switch-exposed ca-switch-tag-2 p-5 h-70px">
-                    .ca-switch-exposed
-                    <br/>
-                    .ca-switch-tag-2
-                </div>
-                <div class="ca-switch-exposed ca-switch-tag-5 p-5 h-60px">
-                    .ca-switch-exposed
-                    <br/>
-                    .ca-switch-tag-5
-                </div>
-                <div class="ca-switch-acting cu-p p-5 h-60px">
-                    .ca-switch-acting
-                </div>
-
-            </div>
-
-
-            <div class="blog-aside ca-switch brr-10 ov-h bc-white">
-
-                <div class="ov-h">
-                    <button class="blog-aside-switcher-item selected ca-switch-acting ca-switch-action-too ca-switch-tag-1">Рубрики</button>
-                    <button class="blog-aside-switcher-item ca-switch-acting ca-switch-action-too ca-switch-tag-2">Авторы</button>
-                </div>
-                <div class=" p-10">
-                    <div class="blog-aside-switcher-content selected ca-switch-exposed ca-switch-tag-1">
-                        <div>
-                            123
-                        </div>
-                    </div>
-                    <div class="blog-aside-switcher-content ca-switch-exposed ca-switch-tag-2">
-                        <div>
-                            321
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-
-        </div>
+        <ul class="ca-switch list-horizontal">
+            <li class="cu-p">1</li>
+            <li class="cu-p">2</li>
+            <li class="cu-p">3</li>
+            <li class="cu-p">4</li>
+            <li class="cu-p">5</li>
+            <li class="cu-p">6</li>
+            <li class="cu-p">7</li>
+            <li class="cu-p">8</li>
+            <li class="cu-p">9</li>
+            <li class="cu-p">10</li>
+        </ul>
     </fieldset>
+
+    <fieldset class="mt-20 ca-switch-block">
+        <legend>.ca-switch-block</legend>
+        <fieldset>
+            <legend>.ca-switch-acting</legend>
+            <ul class="ca-switch-acting list-horizontal">
+                <li class="cu-p">1</li>
+                <li class="cu-p">2</li>
+                <li class="cu-p">3</li>
+                <li class="cu-p">4</li>
+                <li class="cu-p">5</li>
+                <li class="cu-p">6</li>
+                <li class="cu-p">7</li>
+                <li class="cu-p">8</li>
+                <li class="cu-p">9</li>
+                <li class="cu-p">10</li>
+            </ul>
+        </fieldset>
+        <fieldset>
+            <legend>.ca-switch-exposed</legend>
+            <ul class="ca-switch-exposed list-horizontal">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+                <li>10</li>
+            </ul>
+        </fieldset>
+    </fieldset>
+
 </fieldset>
 
 <fieldset class="mt-20">
     <legend>select.select-css</legend>
     <div class="mt-20">
 
-        <div class="ca-select-css">
+        <div>
 
             <label class="d-b w-100">
-                <select name="select" id="select" class="ca-select-css w-100">
+                <select name="select" id="select" class="ca-select-css">
                     <option value="4">Lorem ipsum.</option>
                     <option value="4" selected>Lorem ipsum dolor.</option>
                     <option value="4">Lorem ipsum ipsum.</option>
@@ -308,7 +140,7 @@
                         <option value="4">Lorem ipsum dolor sit.</option>
                         <option value="4" title="lorem123">Lorem ipsum dolamet.</option>
                     </optgroup>
-                    <option value="">Lorem ipsum dolor.</option>
+                    <option value="122">Lorem ipsum dolor.</option>
                     <optgroup label="Group 2">
                         <option value="4">Lorem ipsum dolor sit.</option>
                         <option value="4" title="lorem123">Lorem ipsum dolor sit amet sit amet.</option>
@@ -317,26 +149,26 @@
                 </select>
             </label>
 
+            <label class="d-b w-100">
+                <select name="select1" id="select1" class="ca-select-css" size="5" multiple>
+                    <option value="14">Lorem ipsum.</option>
+                    <option value="45">Lorem ipsum dolor.</option>
+                    <option value="43" selected>Lorem ipsum ipsum. q e3e23</option>
+                    <optgroup label="Group 1" >
+                        <option value="4">Lorem ipsum dolor sit.</option>
+                        <option value="215" title="lorem123" disabled>Lorem ipsum dolamet.</option>
+                    </optgroup>
+                    <option value="22">Lorem ipsum dolor.</option>
+                    <optgroup label="Group 2">
+                        <option value="123">Lorem ipsum dolor sit.</option>
+                        <option value="33" title="lorem123">Lorem ipsum dolor sit amet sit amet.</option>
+                    </optgroup>
+
+                </select>
+            </label>
 
 
-            <div class="select ca-select-css-select catalog-aside-select">
-                <div class="ca-select-css-select-label p-5px">Lorem ipsum dolor.</div>
-                <div class="options ca-select-css-options p-a zi-100">
-                    <div class="option ca-select-css-option">
-                        <div class="option-label select-option-padding ca-select-css-option-target">123</div>
-                    </div>
-                    <div class="option select ca-select-css-group icons-select- -groups">
-                        <div class="ca-select-css-group-label option-label">
-                            <div class="select-option-padding ca-select-css-group-label-target">123</div>
-                        </div>
-                        <div class="options-group ca-select-css-group-options">
-                            <div class="option ca-select-css-option">
-                                <div class="option-label select-option-padding ca-select-css-option-target">123</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
 
         </div>
@@ -381,6 +213,30 @@
                 <input type="text" id="date2" class="ca-date-picker" placeholder=".ca-date-picker"/>
             </div>
         </form>
+    </div>
+</fieldset>
+
+
+<fieldset class="mt-20">
+    <legend>Popup window</legend>
+    <div class="mt-20">
+
+        <div class="ca-popup d-n">
+            <div class="wrap">
+                <div class="contain">
+                    <div class="inner">
+                        <div class="close">X</div>
+                        <div class="content">
+                            <img src="img.jpg" alt=""/>
+                            <div class="description mt-20px">
+                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut, harum?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </fieldset>
 
