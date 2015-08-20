@@ -5,7 +5,7 @@
  * Time     19:32
  *
  * @author  Lossir  lossir@mail.ru
- * @version 2.1
+ * @version 2.0
  *
  * @augments jL
  * @requires jL,jQuery
@@ -21,7 +21,7 @@
                  * Родительское окно
                  * @type {HTMLElement|jQuery}
                  *
-                 * @defaultValue this
+                 * @defaultvalue this
                  */
                 'window'   : this,
                 /**
@@ -35,7 +35,7 @@
                  *
                  * @param {Object} control  Объект содержит метода упраления слайд-шоу
                  *
-                 * @defaultValue null
+                 * @defaultvalue null
                  */
                 callback   : null,
                 /**
@@ -82,63 +82,63 @@
                  * Цикличность
                  * @type {Boolean}
                  *
-                 * @defaultValue true
+                 * @defaultvalue true
                  */
                 loop       : true,
                 /**
                  * Автоматическая смена слайдов [в миллисекундах]
                  * @type {null|Number}
                  *
-                 * @defaultValue null
+                 * @defaultvalue null
                  */
                 auto       : null,
                 /**
                  * Стиль смены сладов
                  * @type {String} "now","all"
                  *
-                 * @defaultValue "all"
+                 * @defaultvalue "now"
                  */
                 style      : "all",
                 /**
                  * Скорость смены сладов
                  * @type {Number}
                  *
-                 * @defaultValue 300
+                 * @defaultvalue 300
                  */
                 speed      : 300,
                 /**
                  * Класс, добавляемый показываемым слайдам
                  * @type {String|undefined}
                  *
-                 * @defaultValue "selected"
+                 * @defaultvalue "selected"
                  */
                 selected   : "selected",
                 /**
                  * Ориентация движений   horizontal || vertical
                  * @type {String}
                  *
-                 * @defaultValue "horizontal"
+                 * @defaultvalue "horizontal"
                  */
                 orientation: "horizontal",
                 /**
                  * Количество элементов, показываемых за раз
                  * @type {Number}
                  *
-                 * @defaultValue 1
+                 * @defaultvalue 1
                  */
                 limit      : 1,
                 /**
                  * Количество элементов, сдвигаемых за раз
                  * @type {Number}
                  *
-                 * @defaultValue 1
+                 * @defaultvalue 1
                  */
                 shift      : 1,
                 /**
                  * Порядковый номер слайда, первого в списке показываемых
                  * @type {Number}
                  *
-                 * @defaultValue 0
+                 * @defaultvalue 0
                  */
                 start      : 0,
                 /**
@@ -160,6 +160,14 @@
                         items = settings.items,
                         orientation = settings.orientation,
                         widthItem = 100 / limit,
+                        autoTimerId = 0,
+                        autoTimer = function () {
+                            clearInterval(autoTimerId);
+                            autoTimerId = setInterval(function () {
+//                                console.log('timer');
+                                control('+');
+                            }, settings.auto)
+                        },
                         /**
                          * Управление слайдами
                          *
@@ -175,7 +183,7 @@
                                 /**
                                  * Добавляет класс выделенным пунктам
                                  */
-                                    selected = function () {
+                                selected = function () {
                                     items.removeClass(settings.selected)
                                         .eq(currentItemsIndexStart).addClass(settings.selected);
 
@@ -189,7 +197,7 @@
                                  *
                                  * @returns {Number}
                                  */
-                                    loopTest = function () {
+                                loopTest = function () {
                                     if (currentItemsIndexStart > shift) {
                                         return settings.loop && prevItemsIndexStart == shift
                                             ? 0
@@ -212,7 +220,7 @@
                                 if (action < shift) shift = action;
                                 currentItemsIndexStart = shift;
                             }
-                            else {
+                            else
                                 if (/(\+|\-)/.test(action)) {
                                     currentItemsIndexStart += +(action + 1) > 0
                                         ? settings.shift
@@ -220,12 +228,13 @@
                                     currentItemsIndexStart = loopTest();
                                 }
                                 else return;
-                            }
-
-                            if (settings.selected)selected();
 
                             /* Если первый элемента не изменился - ничего не делаем */
                             if (currentItemsIndexStart == prevItemsIndexStart)return;
+
+                            if (settings.selected)selected();
+
+                            if (settings.auto)autoTimer();
 
                             /* Определяем индексы всех элементов прошлого и текущего показа */
                             prevItemsIndex = currentItemsIndex;
@@ -257,43 +266,20 @@
                                 }
                             });
 
-                        },
-                        controlActionOn = function() {
-                            var ready = true,
-                                sett,
-                                autoTimerId = 0,
-                                test = function (action) {
-                                    /* Делаем проверку, чтобы вызовы событий смены слайдов не накладывались и не сбивались */
-                                    if (ready) {
-                                        control(action);
-                                        ready = false;
-                                        clearTimeout(sett);
-                                        if (settings.auto)autoTimer();
-                                        sett = setTimeout(function () {
-                                            ready = true;
-                                        }, settings.speed);
-                                    }
-                                },
-                                autoTimer = function () {
-                                    clearInterval(autoTimerId);
-                                    autoTimerId = setInterval(function () {
-                                        test('+');
-                                    }, settings.auto)
-                                };
-                            if (settings.controlBack) settings.controlBack.on('click', function () {
-                                test('-')
-                            });
-                            if (settings.controlForward) settings.controlForward.on('click', function () {
-                                test('+')
-                            });
-                            if (settings.controlDot) settings.controlDot.on('click', function () {
-                                test($(this).index())
-                            });
-                            if (settings.auto)autoTimer();
-                            test(start);
                         };
-                    controlActionOn();
+
+                    if (settings.controlBack) settings.controlBack.on('click', function () {
+                        control('-')
+                    });
+                    if (settings.controlForward) settings.controlForward.on('click', function () {
+                        control('+')
+                    });
+                    if (settings.controlDot) settings.controlDot.on('click', function () {
+                        control($(this).index())
+                    });
+
                     resize();
+                    control(start);
                 }
             };
         return $(this).each(function () {
