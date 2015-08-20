@@ -1,2 +1,5 @@
 jL/old/*
 .idea
+jquery-1.11.2.js
+es5-shim.map
+html5forIE.min.js

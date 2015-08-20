@@ -163,39 +163,39 @@
                     }
                 },
                 {
-                    'className' : 'placeholder',
+                    'className' : '.ie9[placeholder]',
                     /**
                      */
                     'action': function () {
                         var elems = $(this);
-                        jL.IEBind.add('8,9', function(){
-                            elems.each(function () {
-                                var $this = $(this),
-                                    placeholder = $this.attr('placeholder'),
-                                    tag = $this.prop('tagName'),
-                                    color = $this.prop('color'),
-                                    method = (tag === 'INPUT') ? 'val'
-                                        : 'text',
-                                    placeholderShow = function () {
-                                        if($this[method]() === placeholder){
-                                            $this.css('color', color);
-                                            $this[method]('');
-                                        }
-                                    },
-                                    placeholderHide = function () {
-                                        var value = $this[method]();
-                                        $this[method](value === placeholder || value === '' ? function () {
-                                            $this.css('color', '#aaaaaa');
-                                            return placeholder;
-                                        }()
-                                            : value);
-                                    };
-                                $this.on( "focus", placeholderShow);
-                                $this.on( "blur", placeholderHide);
-                                placeholderHide();
+                        //jL.IEBind.add('8,9', function(){
+                        elems.each(function () {
+                            var $this = $(this),
+                                placeholder = $this.attr('placeholder'),
+                                tag = $this.prop('tagName'),
+                                color = $this.prop('color'),
+                                method = (tag === 'INPUT') ? 'val'
+                                    : 'text',
+                                placeholderShow = function () {
+                                    if($this[method]() === placeholder){
+                                        $this.css('color', color);
+                                        $this[method]('');
+                                    }
+                                },
+                                placeholderHide = function () {
+                                    var value = $this[method]();
+                                    $this[method](value === placeholder || value === '' ? function () {
+                                        $this.css('color', '#aaaaaa');
+                                        return placeholder;
+                                    }()
+                                        : value);
+                                };
+                            $this.on( "focus", placeholderShow);
+                            $this.on( "blur", placeholderHide);
+                            placeholderHide();
 //                $this[method](placeholder);
-                            });
                         });
+                        //});
                     }
                 },
                 {
@@ -229,7 +229,7 @@
                     }
                 },
                 {
-                    'className' : 'select-css',
+                    'className' : '.ca-select-css',
                     /**
                      * <pre>
                      * Создание стилизованного тега select
@@ -322,20 +322,21 @@
                     }
                 },
                 {
-                    'className' : 'switch,switch-block',
+                    'className' : '.ca-switch, .ca-switch-block',
                     /**
                      * Переключение класса "selected" между набором элементов
                      */
                     'action': function () {
-                        var $this = $(this),
+                        var self = this,
+                            $this = $(this),
                             switchClass = 'selected',
                             items = this.children,
                             $items = $(items);
                         // элементы могут переключать класс "selected" внутри своего набора
                         if($this.hasClass('ca-switch')) {
-                            $this.on('click', '>*', function (index) {
+                            $(document).on("click", ">*", function (e) {
                                 $items.removeClass(switchClass);
-                                this.className += " "+switchClass;
+                                event.srcElement.className += " "+switchClass;
                             });
                         }
                         // или в другом наборе элементов
@@ -357,7 +358,7 @@
                     }
                 },
                 {
-                    'className' : 'popup-image',
+                    'className' : '.ca-popup-image',
                     'action': function () {
 
                     }
@@ -366,7 +367,7 @@
 
         $(function(){
             actions.forEach(function(item){
-                $(getSelector(item.className,',')).each(item.action);
+                $(item.className).each(item.action);
             });
         });
 

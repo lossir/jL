@@ -1,6 +1,12 @@
 <!doctype html>
-<html lang="ru">
+<!--[if lt IE 7]><html class="ie ie6" lang="ru"><![endif]-->
+<!--[if IE 7]><html class="ie ie7" lang="ru"><![endif]-->
+<!--[if IE 8]><html class="ie ie8" lang="ru"><![endif]-->
+<!--[if IE 9]><html class="ie ie9" lang="ru"><![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="ru"><!--<![endif]-->
 <head>
+
+
     <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
     <meta http-equiv="content-language" content="ru"/>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -8,7 +14,9 @@
     <link rel="stylesheet" href="/cutback.css"/>
     <link rel="stylesheet" href="style.css"/>
 
-    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!--[if lt IE 9]><script src="/html5forIE.min.js"></script><![endif]-->
+
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <!--<script src="//code.jquery.com/jquery-1.9.1.min.js"></script>-->
     <!--<script src="/js/jquery-1.11.2.min.js"></script>-->
     <script src="/jL.js"></script>
@@ -26,6 +34,9 @@
 
         .selected {
             box-shadow: inset 0 0 0 1px red;
+        }
+        .ie8 .selected {
+            border: solid 1px red;
         }
 
         .disabled {
@@ -80,7 +91,7 @@
             <li class="cu-p">2</li>
             <li class="cu-p">3</li>
             <li class="cu-p">4</li>
-            <li class="cu-p">5</li>
+            <li class="cu-p selected">5</li>
             <li class="cu-p">6</li>
             <li class="cu-p">7</li>
             <li class="cu-p">8</li>

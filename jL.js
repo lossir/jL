@@ -14,6 +14,9 @@
 //Time: 10:51
 //TODO: Написать "перехватчик" ajax запросов, для отслеживания появления новых элементов
 
+//Date: 20.08.2015
+//Time: 13:38
+//TODO: Необходимо подробно просмотреть реализацию мелких, но важных функций для ie8\9
 
 (function ($) {
     "use strict";
@@ -55,6 +58,14 @@
     });
     expansionDefineProperty(Array.prototype, 'diff', function(a) {
         return this.filter(function(i) {return a.indexOf(i) < 0;});
+    });
+    expansionDefineProperty(window.Element.prototype, 'getElementsByClassName', function (className) {
+        return Array.prototype.filter.call(this.getElementsByTagName("*"), function (item) {
+            return !~item.className.split(" ").indexOf(className);
+        });
+    });
+    expansionDefineProperty(window.Element.prototype, 'addEventListener', function () {
+        //console.log(this,arguments);
     });
     expansionDefineProperty(Array.prototype, 'forEach', function (func) {
         func = func || false;
