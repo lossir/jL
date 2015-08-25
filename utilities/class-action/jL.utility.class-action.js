@@ -242,7 +242,11 @@
                             optionSelecting = function () {
                                 var li = $(contain.querySelectorAll('li[data-index]'))
                                     .removeClass("selected");
+
                                 if(select.multiple) {
+                                    //Date: 24.08.2015
+                                    //Time: 17:51
+                                    //TODO: fix IE8
                                     Array.prototype.forEach.call(select.selectedOptions, function (item) {
                                         li[item.indexOf].className += " selected";
                                     });
@@ -289,7 +293,8 @@
 
                         building();
 
-                        $(select.parentElement).on('click', 'li[data-index]:not(.disabled)', function (e) {
+                        $(select.parentElement).off('click.select-css').on('click.select-css', 'li[data-index]:not(.disabled)', function (e) {
+                            console.log(this);
                             var index = +(this.dataset ? this.dataset.index : this.getAttribute('data-index'));
                             if (select.multiple && e.ctrlKey) {
                                 select[index].selected = !select[index].selected;
@@ -322,11 +327,14 @@
                     }
                 },
                 {
-                    'className' : '.ca-switch, .ca-switch-block',
+                    'className' : '.ca-switch1, .ca-switch-block1',
                     /**
                      * Переключение класса "selected" между набором элементов
                      */
                     'action': function () {
+                        //Date: 24.08.2015
+                        //Time: 17:59
+                        //TODO: fix: when this = window
                         var self = this,
                             $this = $(this),
                             switchClass = 'selected',

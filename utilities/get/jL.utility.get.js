@@ -27,15 +27,16 @@
             tag : function (tagName) {
                 return doc.getElementsByTagName(tagName);
             },
-            selector : function (selector) {
+            sel : function (selector) {
                 return doc.querySelector(selector);
             },
-            selectorAll : function (selector) {
+            sela : function (selector) {
                 return doc.querySelectorAll(selector);
             }
         };
 
         jL.expansionDefineProperty(doc, 'get', methods);
+        jL.expansionDefineProperty(window.HTMLCollection.prototype, 'get', methods);
         jL.expansionDefineProperty(window.Element.prototype, 'get', methods);
 
         return methods;
